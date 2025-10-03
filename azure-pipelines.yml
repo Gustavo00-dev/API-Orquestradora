@@ -1,0 +1,87 @@
+trigger:
+  branches:
+    include:
+      - master
+
+variables:
+  buildConfiguration: 'Release'
+  imageName: 'apifcg'
+  dockerfilePath: 'Dockerfile' 
+  containerRegistry: 'apifcg.azurecr.io'
+
+stages:
+  - stage: BuildApp
+    displayName: 'Restaurar, Compilar e Testar .NET'
+    jobs:
+      - job: BuildJob
+        displayName: 'Build da aplicação .NET'
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        steps:
+          - checkout: self
+            displayName: 'Clonar repositório'
+
+          - task: UseDotNet@2
+            displayName: 'Instalar .NET 8 SDK'
+            inputs:
+              packageType: 'sdk'
+              version: '8.0.x'
+              installationPath: $(Agent.ToolsDirectory)/dotnet
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Restaurar dependências'
+            inputs:
+              command: 'restore'
+              projects: '**/*.csproj'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Compilar'
+            inputs:
+              command: 'build'
+              arguments: '--configuration $(buildConfiguration)'
+              projects: '**/*.csproj'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Executar testes (opcional)'
+            inputs:
+              command: 'test'
+              projects: '**/*Tests.csproj'
+              arguments: '--configuration $(buildConfiguration)'
+            continueOnError: true  # não falha caso não existam testes
+
+  - stage: DockerBuildPush
+    displayName: 'Build e Push da Imagem Docker'
+    dependsOn: BuildApp
+    jobs:
+      - job: DockerJob
+        displayName: 'Docker Build e Push'
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        steps:
+          - checkout: self
+            displayName: 'Clonar repositório'
+
+          - task: Docker@2
+            displayName: 'Login no ACR'
+            inputs:
+              command: 'login'
+              containerRegistry: 'AzureRegistryConnection'
+
+          - task: Docker@2
+            displayName: 'Build da imagem Docker'
+            inputs:
+              command: 'build'
+              Dockerfile: '$(dockerfilePath)'
+              repository: '$(containerRegistry)/$(imageName)'
+              tags: |
+                latest
+
+          - task: Docker@2
+            displayName: 'Push da imagem para o ACR'
+            inputs:
+              command: 'push'
+              repository: '$(containerRegistry)/$(imageName)'
+              tags: |
+                latest
