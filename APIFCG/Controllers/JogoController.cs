@@ -1,5 +1,6 @@
 ﻿using APIFCG.Infra.LogAPI;
 using APIFCG.Infra.Model;
+using APIFCG.Infra.Services;
 using APIFCG.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +17,18 @@ namespace APIFCG.Controllers
     {
         private readonly BaseLogger<UsuarioController> _logger;
         private readonly IJogoService _jogoService;
+        private readonly IJogoProducer _jogoProducer;
 
 
         public JogoController(
             BaseLogger<UsuarioController> logger,
-            IJogoService jogoService
+            IJogoService jogoService,
+            IJogoProducer jogoProducer
         )
         {
             _logger = logger;
             _jogoService = jogoService;
+            _jogoProducer = jogoProducer;
         }
 
         /// <summary>
@@ -78,7 +82,7 @@ namespace APIFCG.Controllers
         /// <returns></returns>
         [Authorize(Roles = "Admin")]
         [HttpPost("CadastrarNovoJogo")]
-        public IActionResult CadastrarJogo(JogoDTO jogoDTO)
+        public async Task<IActionResult> CadastrarJogo(JogoDTO jogoDTO)
         {
             try
             {
@@ -98,14 +102,30 @@ namespace APIFCG.Controllers
                     UsuarioResponsavelCadastro = jogoDTO.UsuarioResponsavelCadastro ?? "Admin", // Defult para Admin
                 };
 
-                var response = _jogoService.CadastrarJogo(jogo);
-                if (response is BadRequestObjectResult)
+                // Enfileira mensagem no Service Bus sobre o novo cadastro
+                var jogoMessage = new APIFCG.Infra.Model.JogoMessage
                 {
-                    _logger.LogWarning("Falha ao cadastrar jogo via serviço.", "Jogos");
-                    return response;
+                    idJogo = jogo.idJogo,
+                    Nome = jogo.Nome,
+                    NomeAbreviado = jogo.NomeAbreviado,
+                    DataLancamento = jogo.DataLancamento,
+                    ValorVenda = jogo.ValorVenda,
+                    UsuarioResponsavelCadastro = jogo.UsuarioResponsavelCadastro,
+                    DataCadastro = DateTime.UtcNow
+                };
+
+                try
+                {
+                    await _jogoProducer.EnqueueCadastrarJogoAsync(jogoMessage);
                 }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Erro ao enfileirar mensagem no Service Bus: {ex.Message}", "ServiceBus");
+                    // não falha o cadastro por conta de erro na fila
+                }
+
                 _logger.LogInformation($"Jogo {jogo.Nome} cadastrado com sucesso.", "Jogos");
-                return response;
+                return StatusCode(200, "Jogo Cadastrado com sucesso.");
             }
             catch (Exception e)
             {

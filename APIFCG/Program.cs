@@ -5,6 +5,9 @@ using APIFCG.Infra.LogAPI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
+using Azure.Messaging.ServiceBus;
+using APIFCG.Infra.Services; // IJogoProducer / ServiceBusProducer
 
 namespace APIFCG
 {
@@ -62,6 +65,15 @@ namespace APIFCG
             //Dependencies
             builder.Services.ResolveDependencies();
 
+            // Service Bus (produtor)
+            var sbConnection = builder.Configuration.GetValue<string>("ServiceBus:ConnectionString");
+            var sbQueue = builder.Configuration.GetValue<string>("ServiceBus:QueueName");
+            if (!string.IsNullOrEmpty(sbConnection) && !string.IsNullOrEmpty(sbQueue))
+            {
+                // Registra cliente singleton do Service Bus
+                builder.Services.AddSingleton(new ServiceBusClient(sbConnection));
+            }
+
             // Elastic logging
             builder.Services.AddElasticLogging(builder.Configuration);
 
@@ -92,16 +104,32 @@ namespace APIFCG
             #endregion
 
             var app = builder.Build();
+            app.UsePathBase("/apifcg");
+            app.UseSwagger(c =>
+           {
+               c.PreSerializeFilters.Add((swagger, httpReq) =>
+               {
+                   swagger.Servers = new List<OpenApiServer>
+                   {
+                        new OpenApiServer
+                        {
+                            Url = "/apifcg"
+                        }
+                   };
+               });
+           });
 
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/apifcg/swagger/v1/swagger.json", "APIFCG v1");
+                c.RoutePrefix = "swagger";
+            });
 
-            app.UseSwagger();
-            app.UseSwaggerUI();
-
-
-            app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseHttpsRedirection();
 
             app.MapControllers();
 

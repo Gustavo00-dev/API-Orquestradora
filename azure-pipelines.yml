@@ -6,8 +6,7 @@ trigger:
 variables:
   buildConfiguration: 'Release'
   imageName: 'apifcg'
-  dockerfilePath: 'Dockerfile' 
-  containerRegistry: 'apifcg.azurecr.io'
+  dockerfilePath: 'Dockerfile'
 
 stages:
   - stage: BuildApp
@@ -74,7 +73,7 @@ stages:
             inputs:
               command: 'build'
               Dockerfile: '$(dockerfilePath)'
-              repository: '$(containerRegistry)/$(imageName)'
+              repository: '$(imageName)'
               tags: |
                 latest
 
@@ -82,6 +81,18 @@ stages:
             displayName: 'Push da imagem para o ACR'
             inputs:
               command: 'push'
-              repository: '$(containerRegistry)/$(imageName)'
+              repository: '$(imageName)'
               tags: |
                 latest
+                
+          - task: Kubernetes@1
+            displayName: Deploy no AKS
+            inputs:
+              connectionType: 'Azure Resource Manager'
+              azureSubscriptionEndpoint: 'aks-connection'
+              azureResourceGroup: 'Curso_PosGraduacao_FIAP'
+              kubernetesCluster: 'CLUSTER_FIAP'
+              namespace: default
+              command: apply
+              useConfigurationFile: true
+              configuration: 'k8s/deployment.yaml'

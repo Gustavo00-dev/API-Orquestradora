@@ -1,4 +1,5 @@
 ﻿using APIFCG.Infra.LogAPI;
+using APIFCG.Infra.Services;
 using APIFCG.Service;
 
 namespace APIFCG.Configuracao
@@ -16,6 +17,8 @@ namespace APIFCG.Configuracao
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IUsuarioService, UsuarioService>();
             services.AddScoped<IJogoService, JogoService>();
+            // Producer de Service Bus
+            services.AddScoped<IJogoProducer, ServiceBusProducer>();
             #endregion
 
             return services;

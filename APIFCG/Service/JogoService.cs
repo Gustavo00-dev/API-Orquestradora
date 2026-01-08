@@ -28,9 +28,9 @@ namespace APIFCG.Service
             try
             {
                 using var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "abec3fafe03345c4bcbaf0d3ee965366");
+                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "69a694132506419fba55c3802ac36aad");
 
-                var response = httpClient.GetAsync("https://fiap-apigatw-arquitetura.azure-api.net/ms-jogos/api/Jogo/BuscarTodosJogos").Result;
+                var response = httpClient.GetAsync("https://gerencimentoapi.azure-api.net/msjogos/api/Jogo/BuscarTodosJogos").Result;
                 response.EnsureSuccessStatusCode();
 
                 var json = response.Content.ReadAsStringAsync().Result;
@@ -52,9 +52,9 @@ namespace APIFCG.Service
             try
             {
                 using var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "abec3fafe03345c4bcbaf0d3ee965366");
+                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "69a694132506419fba55c3802ac36aad");
 
-                var response = httpClient.GetAsync($"https://fiap-apigatw-arquitetura.azure-api.net/ms-jogos/api/Jogo/ListarTodosJogosCliente?idtCliente={idtCliente}").Result;
+                var response = httpClient.GetAsync($"https://gerencimentoapi.azure-api.net/msjogos/api/Jogo/ListarJogosPorId?idtCliente={idtCliente}").Result;
                 response.EnsureSuccessStatusCode();
 
                 var json = response.Content.ReadAsStringAsync().Result;
@@ -76,10 +76,10 @@ namespace APIFCG.Service
             try
             {
                 using var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "abec3fafe03345c4bcbaf0d3ee965366");
+                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "69a694132506419fba55c3802ac36aad");
 
                 var jsonContent = new StringContent(System.Text.Json.JsonSerializer.Serialize(jogo), System.Text.Encoding.UTF8, "application/json");
-                var response = httpClient.PostAsync("https://fiap-apigatw-arquitetura.azure-api.net/ms-jogos/api/Jogo/CadastrarNovoJogo", jsonContent).Result;
+                var response = httpClient.PostAsync("https://gerencimentoapi.azure-api.net/msjogos/api/Jogo/CadastrarNovoJogo", jsonContent).Result;
                 response.EnsureSuccessStatusCode();
 
                 return new OkObjectResult("Jogo cadastrado com sucesso.");
@@ -95,9 +95,9 @@ namespace APIFCG.Service
             try
             {
                 using var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "abec3fafe03345c4bcbaf0d3ee965366");
+                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "69a694132506419fba55c3802ac36aad");
 
-                var response = httpClient.GetAsync($"https://fiap-apigatw-arquitetura.azure-api.net/ms-jogos/api/Jogo/ListarJogosPorId?idtJogo={idtJogo}").Result;
+                var response = httpClient.GetAsync($"https://gerencimentoapi.azure-api.net/msjogos/api/Jogo/ListarJogosPorId?idtJogo={idtJogo}").Result;
                 response.EnsureSuccessStatusCode();
 
                 var json = response.Content.ReadAsStringAsync().Result;
@@ -119,10 +119,10 @@ namespace APIFCG.Service
             try
             {
                 using var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "abec3fafe03345c4bcbaf0d3ee965366");
+                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "69a694132506419fba55c3802ac36aad");
 
                 var jsonContent = new StringContent(System.Text.Json.JsonSerializer.Serialize(promocao), System.Text.Encoding.UTF8, "application/json");
-                var response = httpClient.PostAsync("https://fiap-apigatw-arquitetura.azure-api.net/ms-jogos/api/Jogo/CadastrarPromocao", jsonContent).Result;
+                var response = httpClient.PostAsync("https://gerencimentoapi.azure-api.net/msjogos/api/Jogo/CadastrarPromocao", jsonContent).Result;
                 response.EnsureSuccessStatusCode();
                 _logger.LogInformation($"Promoção cadastrada com sucesso para o jogo {promocao.IdJogo}.", "jogos");
                 return new OkObjectResult("Promoção cadastrada com sucesso.");
@@ -138,11 +138,11 @@ namespace APIFCG.Service
             try
             {
                 using var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "abec3fafe03345c4bcbaf0d3ee965366");
+                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "69a694132506419fba55c3802ac36aad");
 
                 var compraData = new { IdUsuario = idUsuario, IdJogo = idJogo };
                 var jsonContent = new StringContent(System.Text.Json.JsonSerializer.Serialize(compraData), System.Text.Encoding.UTF8, "application/json");
-                var response = httpClient.PostAsync("https://fiap-apigatw-arquitetura.azure-api.net/ms-jogos/api/Jogo/ComprarJogo?IdUsuario=" + idUsuario + "&IdJogo=" + idJogo, jsonContent).Result;
+                var response = httpClient.PostAsync("https://gerencimentoapi.azure-api.net/msjogos/api/Jogo/ComprarJogo?IdUsuario=" + idUsuario + "&IdJogo=" + idJogo, jsonContent).Result;
                 
                 response.EnsureSuccessStatusCode();
                 _logger.LogInformation($"Jogo {idJogo} comprado com sucesso por usuário {idUsuario}.", "vendas");

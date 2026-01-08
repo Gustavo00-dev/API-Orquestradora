@@ -22,20 +22,20 @@ namespace APIFCG.Infra.LogAPI
 
         public virtual void LogInformation(string message, string index)
         {
-            logElk(message, "Information", index);
+            //logElk(message, "Information", index);
 
             _logger.LogInformation($"[CorrelationId: {_correlationId.Get()}] {message}");
         }
 
         public virtual void LogError(string message, string index)
         {
-            logElk(message, "Error", index);
+            //logElk(message, "Error", index);
             _logger.LogError($"[CorrelationId: {_correlationId.Get()}] {message}");
         }
 
         public virtual void LogWarning(string message, string index)
         {
-            logElk(message, "Warning", index);
+            //logElk(message, "Warning", index);
             _logger.LogWarning($"[CorrelationId: {_correlationId.Get()}] {message}");
         }
 

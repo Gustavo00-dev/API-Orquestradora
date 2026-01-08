@@ -164,5 +164,17 @@ namespace APIFCG.Controllers
                 return BadRequest($"Erro ao deletar usuário: {e.Message}");
             }
         }
+
+        [HttpGet("EndPointValidacao")]
+        public IActionResult EndPointValidacao(int id)
+        {
+            try
+            {
+                return Ok($"Valor passado {id}");
+            }catch(Exception e)
+            {
+                return BadRequest($"Erro ao processar {e.Message}");
+            }
+        }
     }
 }

@@ -37,8 +37,9 @@ namespace APIFCG.Service
 
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "abec3fafe03345c4bcbaf0d3ee965366");
-                var response = httpClient.GetAsync("https://fiap-apigatw-arquitetura.azure-api.net/ms-usuarios/api/Base/GetTodosUsuarios").Result;
+                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "69a694132506419fba55c3802ac36aad");
+                var response = httpClient.GetAsync("https://gerencimentoapi.azure-api.net/msusuarios/api/Base/GetTodosUsuarios").Result;
+                
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -69,9 +70,9 @@ namespace APIFCG.Service
                         senha = usuario.Senha
                     };
 
-                    httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "abec3fafe03345c4bcbaf0d3ee965366");
+                    httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "69a694132506419fba55c3802ac36aad");
                     var response = httpClient.PostAsJsonAsync(
-                        "https://fiap-apigatw-arquitetura.azure-api.net/ms-usuarios/api/Base/CadastrarNovoUsuario",
+                        "https://gerencimentoapi.azure-api.net/msusuarios/api/Base/CadastrarNovoUsuario",
                         usuarioPayload
                     ).Result;
 
@@ -99,8 +100,8 @@ namespace APIFCG.Service
 
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "abec3fafe03345c4bcbaf0d3ee965366");
-                var response = httpClient.GetAsync($"https://fiap-apigatw-arquitetura.azure-api.net/ms-usuarios/api/Base/GetUsuarioPorId?id={id}").Result;
+                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "69a694132506419fba55c3802ac36aad");
+                var response = httpClient.GetAsync($"https://gerencimentoapi.azure-api.net/msusuarios/api/Base/GetUsuarioPorId?id={id}").Result;
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = response.Content.ReadAsStringAsync().Result;
@@ -130,10 +131,10 @@ namespace APIFCG.Service
                         novoLvl = usuario.Lvl
                     };
 
-                    httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "abec3fafe03345c4bcbaf0d3ee965366");
+                    httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "69a694132506419fba55c3802ac36aad");
 
                     //O endpoint espera o idUsuario na query e o novoLvl no body
-                    var url = $"https://fiap-apigatw-arquitetura.azure-api.net/ms-usuarios/api/Base/AlterarNivelUsuario?idUsuario={usuario.IdUsuario}&novoLvl={usuario.Lvl}";
+                    var url = $"https://gerencimentoapi.azure-api.net/msusuarios/api/Base/AlterarNivelUsuario?idUsuario={usuario.IdUsuario}&novoLvl={usuario.Lvl}";
                     var response = httpClient.PutAsJsonAsync(url, usuarioPayload).Result;
 
                     if (!response.IsSuccessStatusCode)
@@ -159,8 +160,8 @@ namespace APIFCG.Service
             {
                 using (var httpClient = new HttpClient())
                 {
-                    httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "abec3fafe03345c4bcbaf0d3ee965366");
-                    var response = httpClient.DeleteAsync($"https://fiap-apigatw-arquitetura.azure-api.net/ms-usuarios/api/Base/DeletarUsuario?idUsuarioDeletar={usuario.IdUsuario}").Result;
+                    httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "69a694132506419fba55c3802ac36aad");
+                    var response = httpClient.DeleteAsync($"https://gerencimentoapi.azure-api.net/msusuarios/api/Base/DeletarUsuario?idUsuarioDeletar={usuario.IdUsuario}").Result;
 
                     if (!response.IsSuccessStatusCode)
                     {
